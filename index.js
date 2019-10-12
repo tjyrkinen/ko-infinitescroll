@@ -50,7 +50,7 @@
 
         if (!fireInfiniteScroll()) return
 
-        promise = valueAccessor().call(context.$data)
+        promise = handler.call(context.$data)
 
         if (typeof promise !== 'undefined' && typeof promise.then === 'function') {
           disarmTrigger()
