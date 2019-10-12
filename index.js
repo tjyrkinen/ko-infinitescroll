@@ -8,7 +8,6 @@
   }
 }(function(ko, $, _) {
   'use strict'
-
   ko.bindingHandlers.infiniteScroll = {
 
     init: function(el, valueAccessor, allBindings, viewModel, context) {
@@ -26,11 +25,20 @@
       ko.utils.domNodeDisposal.addDisposeCallback(el, disarmTrigger)
 
       function triggerPoint() {
-        return $(el).offset().top + $(el).outerHeight() - offset
+        return contentHeight() - offset
+      }
+
+      function contentHeight() {
+        var total = 0;
+        $(el.offsetParent).children().each(function () {
+          total += $(this).outerHeight(true);
+        })
+        return total;
       }
 
       function scrolledDist() {
-        return $(window).scrollTop() + $(window).height()
+        const res = $(el.offsetParent).scrollTop() + $(el.offsetParent).height();
+        return res;
       }
 
       function fireInfiniteScroll() {
@@ -42,7 +50,7 @@
 
         if (!fireInfiniteScroll()) return
 
-        promise = handler.call(context.$data)
+        promise = valueAccessor().call(context.$data)
 
         if (typeof promise !== 'undefined' && typeof promise.then === 'function') {
           disarmTrigger()
@@ -51,11 +59,12 @@
       }
 
       function armTrigger() {
-        $(document).on('scroll.infinitescroll', _.throttle(handleScroll, 300))
+        $(el.offsetParent).on('scroll.infinitescroll', _.throttle(handleScroll, 300))
+        handleScroll();
       }
 
       function disarmTrigger() {
-        $(document).off('scroll.infinitescroll')
+        $(el.offsetParent).off('scroll.infinitescroll')
       }
     }
   }
