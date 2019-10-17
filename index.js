@@ -20,6 +20,8 @@
         handler = valueAccessor().handler
         offset = valueAccessor().offset
       }
+      
+      var parent = allBindings().scrollParent ? $(el).closest(allBindings().scrollParent) : el.offsetParent;
 
       armTrigger()
       ko.utils.domNodeDisposal.addDisposeCallback(el, disarmTrigger)
@@ -30,14 +32,14 @@
 
       function contentHeight() {
         var total = 0;
-        $(el.offsetParent).children().each(function () {
+        $(parent).children().each(function () {
           total += $(this).outerHeight(true);
         })
         return total;
       }
 
       function scrolledDist() {
-        const res = $(el.offsetParent).scrollTop() + $(el.offsetParent).height();
+        const res = $(parent).scrollTop() + $(parent).height();
         return res;
       }
 
@@ -59,12 +61,12 @@
       }
 
       function armTrigger() {
-        $(el.offsetParent).on('scroll.infinitescroll', _.throttle(handleScroll, 300))
+        $(parent).on('scroll.infinitescroll', _.throttle(handleScroll, 300))
         handleScroll();
       }
 
       function disarmTrigger() {
-        $(el.offsetParent).off('scroll.infinitescroll')
+        $(parent).off('scroll.infinitescroll')
       }
     }
   }
